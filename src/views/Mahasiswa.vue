@@ -1,89 +1,61 @@
-<script setup>
-import {ref} from "vue";
 
-const mahasiswa = ref([
-  {
-    "ID": 1,
-    "NIM": "A001",
-    "Jurusan": "Teknik Informatika",
-    "NoTelp": "081234567890",
-    "Email": "student1@example.com",
-    "Alamat": "Jalan Mawar No. 1, Jakarta"
-  },
-  {
-    "ID": 2,
-    "NIM": "A002",
-    "Jurusan": "Sistem Informasi",
-    "NoTelp": "081234567891",
-    "Email": "student2@example.com",
-    "Alamat": "Jalan Melati No. 10, Bandung"
-  },
-  {
-    "ID": 3,
-    "NIM": "A003",
-    "Jurusan": "Biologi",
-    "NoTelp": "081234567892",
-    "Email": "student3@example.com",
-    "Alamat": "Jalan Tulip No. 5, Surabaya"
-  },
-  {
-    "ID": 4,
-    "NIM": "A004",
-    "Jurusan": "Fisika",
-    "NoTelp": "081234567893",
-    "Email": "student4@example.com",
-    "Alamat": "Jalan Dahlia No. 11, Yogyakarta"
+<script setup>
+import instance from '../api.js'
+import {ref,onMounted } from "vue";
+import Modal from "../components/Modal.vue"
+const search = ref('')
+const mahasiswa = ref([])
+
+const getMahasiswa = async () =>{
+  try {
+    const res = await instance.get('mahasiswa');
+    mahasiswa.value = res.data.data
+  } catch (error) {
+    
   }
-])
+}
+
+
+
+onMounted(() => {
+  getMahasiswa()
+})
+
+
+
 
 </script>
-
 <template>
-  <div class="container mt-5">
-    <div class="card">
-      <div class="card-header">
-        <h4>List Mahasiswa</h4>
-        <RouterLink to="/mahasiswa/create" class="btn btn-primary float-end">
-          Tambah Mahasiswa
-        </RouterLink>
+  <v-container>
+    <v-row class="mt-5">
+      <v-col>
+        <div class="title">
+        <h2>List Mahasiswa</h2>
       </div>
-      <div class="card-body ">
-        <div class="table-responsive">
-          <table class="table table-bordered">
-            <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">NIM</th>
-              <th scope="col">Jurusan</th>
-              <th scope="col">No Telp</th>
-              <th scope="col">Email</th>
-              <th scope="col">Alamat</th>
-              <th scope="col">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(data,index) in mahasiswa" :key="index">
-              <td>{{data.ID}}</td>
-              <td>{{data.NIM}}</td>
-              <td>{{data.Jurusan}}</td>
-              <td>{{data.NoTelp}}</td>
-              <td>{{data.Email}}</td>
-              <td>{{data.Alamat}}</td>
-              <td>
-                <RouterLink to="/" class="btn btn-success">
-                  Edit
-                </RouterLink>
-                <button type="button" class="btn btn-danger">Delete</button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+      </v-col>
+      <v-col class="d-flex flex-row-reverse">
+        <div class="btn">
+          <Modal @get-mahasiswa="getMahasiswa"/>
         </div>
-      </div>
-    </div>
-    </div>
+      </v-col>
+    </v-row>
+    <v-row >
+          <template v-slot:text>
+            <v-text-field
+              v-model="search"
+              label="Search"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+              hide-details
+              single-line
+            ></v-text-field>
+          </template>
+
+          <v-data-table
+            :items="mahasiswa"
+            :search="search"
+          ></v-data-table>
+    </v-row>
+  </v-container>
+
 </template>
-
-<style scoped>
-
-</style>
