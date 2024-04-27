@@ -30,7 +30,7 @@ onMounted(() => {
     <v-row class="mt-5">
       <v-col>
         <div class="title">
-        <h2>List Mahasiswa</h2>
+        <h2>List Mahasiswa X</h2>
       </div>
       </v-col>
       <v-col class="d-flex flex-row-reverse">
