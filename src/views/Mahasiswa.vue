@@ -5,7 +5,49 @@ import {ref,onMounted } from "vue";
 import Modal from "../components/Modal.vue"
 const search = ref('')
 const mahasiswa = ref([])
-
+const headers = [
+  {
+    title:'ID',
+    align:'start',
+    key:'id'
+  },
+  {
+    title:'NIM',
+    align:'start',
+    key:'nim'
+  },
+  {
+    title:'Jurusan',
+    align:'start',
+    key:'jurusan'
+  },
+  {
+    title:'No Telp',
+    align:'start',
+    key:'notelp'
+  },
+  {
+    title:'Email',
+    align:'start',
+    key:'email'
+  },
+  {
+    title:'Alamat',
+    align:'start',
+    key:'alamat'
+  },
+  {
+    title:'IPK',
+    align:'start',
+    key:'IPK'
+  },
+  {
+    title:'Actions',
+    align:'start',
+    key:'Actions',
+    sortable:false
+  }
+]
 const getMahasiswa = async () =>{
   try {
     const res = await instance.get('mahasiswa');
@@ -15,10 +57,13 @@ const getMahasiswa = async () =>{
   }
 }
 
-
+function generateIpkMahasiswa(index){
+  mahasiswa.value[index].IPK = index
+}
 
 onMounted(() => {
   getMahasiswa()
+  console.log(mahasiswa.value)
 })
 
 
@@ -40,21 +85,32 @@ onMounted(() => {
       </v-col>
     </v-row>
     <v-row >
-          <template v-slot:text>
             <v-text-field
               v-model="search"
               label="Search"
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
-              hide-details
               single-line
             ></v-text-field>
-          </template>
 
           <v-data-table
             :items="mahasiswa"
+            :headers="headers"
             :search="search"
-          ></v-data-table>
+          >
+            <template v-slot:item.id="{ item, index }">
+              <span>{{index + 1}}</span>
+            </template>
+            <template v-slot:item.IPK="{ item, index }">
+              <span v-if="mahasiswa[index].IPK === undefined">-</span>
+              <span v-else>{{item.IPK}}</span>
+            </template>
+            <template v-slot:item.Actions="{ item, index }">
+              <v-btn color="green" @click="generateIpkMahasiswa(index)">
+                Generate IPK
+              </v-btn>
+            </template>
+          </v-data-table>
     </v-row>
   </v-container>
 
