@@ -31,7 +31,7 @@ const createMahasiswa = async () =>{
 </script>
 
 <template>
- <div class="text-center pa-4">
+ <div >
     <v-dialog
       v-model="dialog"
       max-width="400"

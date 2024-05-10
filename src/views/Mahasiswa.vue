@@ -79,9 +79,12 @@ onMounted(() => {
       </div>
       </v-col>
       <v-col class="d-flex flex-row-reverse">
-        <div class="btn">
-          <Modal @get-mahasiswa="getMahasiswa"/>
+        <div class="ma-2 ">
+          <Modal @get-mahasiswa="getMahasisswa"/>
         </div>
+        <v-btn color="indigo-darken-3 ma-2 ">
+          Generate All IPK
+        </v-btn>
       </v-col>
     </v-row>
     <v-row >
