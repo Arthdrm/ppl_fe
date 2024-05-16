@@ -57,8 +57,47 @@ const getMahasiswa = async () =>{
   }
 }
 
-function generateIpkMahasiswa(index){
-  mahasiswa.value[index].IPK = index
+const getDataKrsMahasiswa = async (id) =>{
+  try {
+    const res = await instance.post('mahasiswa/krs',{id:id});
+    return res.data.data
+  } catch (error) {
+
+  }
+}
+
+function convertToGrade(grade) {
+  if (grade >= 85) return { gradeHuruf: 'A', bobot: 4.0 };
+  if (grade >= 70) return { gradeHuruf: 'B', bobot: 3.0 };
+  if (grade >= 55) return { gradeHuruf: 'C', bobot: 2.0 };
+  if (grade >= 40) return { gradeHuruf: 'D', bobot: 1.0 };
+  return { gradeHuruf: 'E', bobot: 0.0 };
+}
+
+const generateIpkMahasiswa = async (index) => {
+  const krs =  await getDataKrsMahasiswa(mahasiswa.value[index].id)
+
+  if (krs.length === 0) {
+    console.log("Mahasiswa tidak memiliki data KRS.");
+    mahasiswa.value[index].IPK = '-'
+    return ;
+  }
+
+  let totalSks = 0;
+  let totalGradePoint = 0;
+
+   krs.forEach(krs => {
+     totalSks += krs.sks;
+     totalGradePoint += convertToGrade(krs.nilai).bobot * krs.sks;
+   })
+  console.log(totalSks)
+  console.log(totalGradePoint)
+
+  const ipk = totalGradePoint / totalSks;
+
+
+
+  mahasiswa.value[index].IPK = ipk
 }
 
 onMounted(() => {
