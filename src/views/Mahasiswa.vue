@@ -100,6 +100,32 @@ const generateIpkMahasiswa = async (index) => {
   mahasiswa.value[index].IPK = ipk
 }
 
+const generateAllIpkMahasiswa = async () => {
+  for (let index in mahasiswa.value){
+    console.log(index)
+    let krs = await getDataKrsMahasiswa(mahasiswa.value[index].id)
+    if (krs.length === 0) {
+      console.log("Mahasiswa tidak memiliki data KRS.");
+      mahasiswa.value[index].IPK = '-'
+      return ;
+    }
+
+    let totalSks = 0;
+    let totalGradePoint = 0;
+
+    krs.forEach(krs => {
+      totalSks += krs.sks;
+      totalGradePoint += convertToGrade(krs.nilai).bobot * krs.sks;
+    })
+    console.log(totalSks)
+    console.log(totalGradePoint)
+
+    const ipk = totalGradePoint / totalSks;
+
+    mahasiswa.value[index].IPK = ipk
+  }
+}
+
 onMounted(() => {
   getMahasiswa()
   console.log(mahasiswa.value)
@@ -121,7 +147,7 @@ onMounted(() => {
         <div class="ma-2 ">
           <Modal @get-mahasiswa="getMahasisswa"/>
         </div>
-        <v-btn color="indigo-darken-3 ma-2 ">
+        <v-btn color="indigo-darken-3 ma-2 " @click="generateAllIpkMahasiswa()">
           Generate All IPK
         </v-btn>
       </v-col>
