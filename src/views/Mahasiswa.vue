@@ -208,7 +208,7 @@ watch([page, itemsPerPage, search], () => {
                 <v-col class="d-flex align-center">
                   <v-select
                       v-model="itemsPerPage"
-                      :items="[5, 10, 20, 50, 100]"
+                      :items="[5, 10, 20, 50, 100,totalItems]"
                       label="Items per page"
                       dense
                       hide-details
