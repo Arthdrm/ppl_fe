@@ -1,7 +1,7 @@
 
 <script setup>
 import instance from '../api.js'
-import {ref,onMounted } from "vue";
+import {ref, onMounted, watch} from "vue";
 import Modal from "../components/Modal.vue"
 const search = ref('')
 const mahasiswa = ref([])
@@ -48,12 +48,29 @@ const headers = [
     sortable:false
   }
 ]
+
+const totalPage = ref(0);
+const totalItems = ref(0);
+const itemsPerPage = ref(10); // Default items per page
+const page = ref(1); // Default pag
+
+
 const getMahasiswa = async () =>{
   try {
-    const res = await instance.get('mahasiswa');
-    mahasiswa.value = res.data.data
+    const response = await instance.get('mahasiswa', {
+      params: {
+        page: page.value,
+        limit: itemsPerPage.value,
+        search:search.value
+      }
+    });
+
+    mahasiswa.value = response.data.data.data
+    totalPage.value = response.data.data.total_page;
+    totalItems.value = response.data.data.total_data;
+    console.log(totalItems.value)
   } catch (error) {
-    
+    console.error(error);
   }
 }
 
@@ -131,7 +148,9 @@ onMounted(() => {
   console.log(mahasiswa.value)
 })
 
-
+watch([page, itemsPerPage, search], () => {
+  getMahasiswa();
+});
 
 
 </script>
@@ -144,30 +163,29 @@ onMounted(() => {
       </div>
       </v-col>
       <v-col class="d-flex flex-row-reverse">
-        <div class="ma-2 ">
-          <Modal @get-mahasiswa="getMahasisswa"/>
-        </div>
+<!--        <div class="ma-2 ">-->
+<!--          <Modal @get-mahasiswa="getMahasisswa"/>-->
+<!--        </div>-->
         <v-btn color="indigo-darken-3 ma-2 " @click="generateAllIpkMahasiswa()">
           Generate All IPK
         </v-btn>
       </v-col>
     </v-row>
     <v-row >
-            <v-text-field
-              v-model="search"
-              label="Search"
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-              single-line
-            ></v-text-field>
 
           <v-data-table
-            :items="mahasiswa"
-            :headers="headers"
-            :search="search"
+              :items="mahasiswa"
+              :headers="headers"
+              :search="search"
+              :items-per-page="itemsPerPage"
+              :page.sync="page"
+              :server-items-length="totalItems"
+              @update:items-per-page="value => itemsPerPage.value = value"
+              :hide-default-footer="true"
+              :disable-pagination="true"
           >
             <template v-slot:item.id="{ item, index }">
-              <span>{{index + 1}}</span>
+              <span>{{ (page - 1) * itemsPerPage + index + 1 }}</span>
             </template>
             <template v-slot:item.IPK="{ item, index }">
               <span v-if="mahasiswa[index].IPK === undefined">-</span>
@@ -177,6 +195,26 @@ onMounted(() => {
               <v-btn color="green" @click="generateIpkMahasiswa(index)">
                 Generate IPK
               </v-btn>
+            </template>
+            <template #bottom>
+              <v-row>
+                <v-col class="d-flex justify-center">
+                  <v-pagination
+                      v-model="page"
+                      :length="totalPage"
+                      total-visible="7"
+                  ></v-pagination>
+                </v-col>
+                <v-col class="d-flex align-center">
+                  <v-select
+                      v-model="itemsPerPage"
+                      :items="[5, 10, 20, 50, 100]"
+                      label="Items per page"
+                      dense
+                      hide-details
+                  ></v-select>
+                </v-col>
+              </v-row>
             </template>
           </v-data-table>
     </v-row>
