@@ -5,6 +5,7 @@ import {ref, onMounted, watch} from "vue";
 import Modal from "../components/Modal.vue"
 const search = ref('')
 const mahasiswa = ref([])
+const apiEndpoint = ref(import.meta.env.VITE_API_ENDPOINT);
 const headers = [
   {
     title:'ID',
@@ -159,7 +160,8 @@ watch([page, itemsPerPage, search], () => {
     <v-row class="mt-5">
       <v-col>
         <div class="title">
-        <h2>List Mahasiswa X</h2>
+        <h2>List Mahasiswa</h2>
+        <p>VITE_API_ENDPOINT: {{ apiEndpoint }}</p>   <!-- debug -->
       </div>
       </v-col>
       <v-col class="d-flex flex-row-reverse">
